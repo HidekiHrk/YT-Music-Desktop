@@ -1,12 +1,8 @@
 import { ipcMain } from "electron";
 import { IpcMainEvent } from "electron/main";
-import { JSDOM } from "jsdom";
 
 var lastActivity: Activity = {
-    title: "",
-    channel: "",
-    thumbnailUrl: "",
-    timestamp: "",
+    type: "idle",
 };
 
 const observer: Observer = {
@@ -24,22 +20,14 @@ const observer: Observer = {
     listeners: [],
 };
 
-const selectors = {
-    title:
-        "#layout > ytmusic-player-bar > div.middle-controls.style-scope.ytmusic-player-bar > div.content-info-wrapper.style-scope.ytmusic-player-bar > yt-formatted-string",
-    thumbnail:
-        "#layout > ytmusic-player-bar > div.middle-controls.style-scope.ytmusic-player-bar > img",
-    channel:
-        "#layout > ytmusic-player-bar > div.middle-controls.style-scope.ytmusic-player-bar > div.content-info-wrapper.style-scope.ytmusic-player-bar > span > span.subtitle.style-scope.ytmusic-player-bar > yt-formatted-string > a",
-};
-
-function checkActivityEquality(obj1: Activity, obj2: Activity) {
-    const duplicates = ["title", "channel", "thumbnailUrl"].filter(
-        (value: "title" | "channel" | "thumbnailUrl") => {
-            return obj2[value] === obj1[value];
-        }
-    );
-    return !!duplicates.length;
+function checkActivityEquality(activity1: Activity, activity2: Activity) {
+    const keys = Object.keys(activity2);
+    const duplicates = keys.filter((value: any) => {
+        const obj1: any = activity1;
+        const obj2: any = activity2;
+        return obj1[value] === obj2[value];
+    });
+    return duplicates.length === keys.length;
 }
 
 function notifyAllListeners() {
@@ -48,30 +36,44 @@ function notifyAllListeners() {
     }
 }
 
-ipcMain.on("newContents", (event: IpcMainEvent, obj: VideoRawObject) => {
-    const dom = new JSDOM(obj.html);
-    const title = dom.window.document.querySelector(selectors.title)?.innerHTML;
-    if (!title) return;
-    const thumbnailUrl = dom.window.document
-        .querySelector(selectors.thumbnail)
-        ?.getAttribute("src");
-    if (!thumbnailUrl) return;
-    const channel = dom.window.document.querySelector(selectors.channel)
-        ?.innerHTML;
-    if (!channel) return;
-    const newActivity = {
-        title,
-        thumbnailUrl,
-        channel,
-    };
-    if (!checkActivityEquality(lastActivity, newActivity)) {
-        lastActivity = { ...lastActivity, ...newActivity };
+ipcMain.on("newContents", (_: IpcMainEvent, obj: VideoRawObject) => {
+    const re = /search\?q=.+/;
+    const { title, thumbnail: thumbnailUrl, channel, playing } = obj.elements;
+    if (re.test(obj.url) && obj.elements.search && !playing) {
+        const newActivity: SearchActivity = {
+            type: "search",
+            query: obj.elements.search || "",
+        };
+        lastActivity = newActivity;
+        return notifyAllListeners();
+    } else if (title && thumbnailUrl && channel) {
+        const newActivity: VideoActivity = {
+            type: "video",
+            title,
+            thumbnailUrl,
+            channel,
+            playing,
+        };
+        if (!checkActivityEquality(lastActivity, newActivity)) {
+            const tempActivity: any = lastActivity;
+            lastActivity = {
+                timestamp: tempActivity?.timestamp,
+                ...newActivity,
+            };
+            return notifyAllListeners();
+        }
+    } else if (lastActivity.type !== "idle") {
+        lastActivity = {
+            type: "idle",
+        };
         notifyAllListeners();
     }
 });
 
-ipcMain.on("timeChange", (event: IpcMainEvent, timeString: string) => {
-    const activityObj = { timestamp: timeString };
+ipcMain.on("timeChange", (_: IpcMainEvent, timeString: string) => {
+    const activityObj = {
+        timestamp: timeString,
+    };
     lastActivity = { ...lastActivity, ...activityObj };
     notifyAllListeners();
 });

@@ -1,12 +1,11 @@
 const { ipcRenderer } = require("electron");
 
-var currentVideoTime = "";
+let currentVideoTime = "";
 
 function sendChangedTime() {
     const element = document.querySelector("#left-controls > span");
-    if (!element) return;
-    const timeString = element.innerText;
-    if (currentVideoTime === timeString) return;
+    const timeString = element?.innerText;
+    if (timeString && currentVideoTime === timeString) return;
     currentVideoTime = timeString;
     ipcRenderer.sendToHost("timeChange", timeString);
 }
