@@ -1,0 +1,11 @@
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=YouTube Music Desktop
+Comment=An Unnoficial YouTube Music Client for desktop
+TryExec=YouTubeMusicDesktop
+Exec=YouTubeMusicDesktop
+Icon=icon.png
+MimeType=image/x-foo;
+Categories=Network;

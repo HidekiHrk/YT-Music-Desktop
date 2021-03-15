@@ -1,6 +1,6 @@
 {
   "name": "YT-Music-Desktop",
-  "productName": "YouTube Music Desktop",
+  "productName": "YouTubeMusicDesktop",
   "version": "0.1.0",
   "main": "dist/index.js",
   "repository": "https://github.com/HidekiHrk/YT-Music-Desktop.git",
