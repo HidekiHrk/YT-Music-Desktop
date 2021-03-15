@@ -7,11 +7,16 @@ declare type VideoRawObject = {
         channel: string;
         search: string;
         playing: boolean;
+        duration: string;
     };
 };
 
 declare type ActivityBase = {
-    type: "video" | "search" | "idle";
+    type: "video" | "search" | "idle" | "notification";
+};
+
+declare type NotificationActivity = ActivityBase & {
+    info?: NotificationInfo;
 };
 
 declare type IdleActivity = ActivityBase & {
@@ -30,7 +35,11 @@ declare type VideoActivity = ActivityBase & {
     timestamp?: string;
 };
 
-declare type Activity = IdleActivity | SearchActivity | VideoActivity;
+declare type Activity =
+    | NotificationActivity
+    | IdleActivity
+    | SearchActivity
+    | VideoActivity;
 
 declare type Observer = {
     register: (

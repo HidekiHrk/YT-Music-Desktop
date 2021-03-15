@@ -1,0 +1,103 @@
+@import './fonts.css';
+
+html, body {
+    padding: 0;
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: "Roboto";
+    background-color: #050505;
+}
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    user-select: none;
+    -webkit-user-drag: no-drag;
+    color: #bbb;
+}
+
+div.container {
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    padding: 10px;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+    grid-template-rows: 0.6fr 0.7fr 1.5fr 0.3fr;
+    column-gap: 10px;
+    grid-template-areas:
+        "thumbnail title duration"
+        "thumbnail music music"
+        "thumbnail author author"
+        "thumbnail . icon";
+}
+
+div.container::before {
+    content: " ";
+    position: absolute;
+    display: block;
+    background-color: #050505;
+    height: 100%;
+    width: 30px;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+@keyframes ScrollAnim {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-200%);
+    }
+}
+
+.scrollable {
+    animation: ScrollAnim 10s linear 0s infinite;
+}
+
+h5.title {
+    font-weight: 400;
+    grid-area: title;
+}
+
+h4.music {
+    font-weight: 500;
+    grid-area: music;
+    white-space: nowrap;
+}
+
+h4.author {
+    font-weight: 400;
+    grid-area: author;
+}
+
+p.duration {
+    font-weight: 300;
+    grid-area: duration;
+}
+
+img.thumbnail {
+    width: 90px;
+    height: 90px;
+    grid-area: thumbnail;
+    object-fit: fill;
+    border-radius: 5px;
+    z-index: 2;
+    -webkit-user-drag: none;
+}
+
+img.icon {
+    width: 20px;
+    height: 20px;
+    grid-area: icon;
+    justify-self: flex-end;
+    -webkit-user-drag: none;
+}
+

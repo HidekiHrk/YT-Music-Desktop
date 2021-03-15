@@ -6,12 +6,19 @@ import {
     setIdleActivity,
     setSearchActivity,
 } from "./activity/presence";
+import { notify } from "./notifications";
 
-let win: MainWindow;
+export let win: MainWindow;
+
+function notifyListener(activity: NotificationActivity) {
+    if (activity.type !== "notification") return;
+    notify(activity.info);
+}
 
 app.on("ready", () => {
     win = new MainWindow();
     win.open();
+    Activity.register(notifyListener);
     Activity.register(setMusicActivity);
     Activity.register(setIdleActivity);
     Activity.register(setSearchActivity);

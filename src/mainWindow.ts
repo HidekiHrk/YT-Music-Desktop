@@ -1,4 +1,4 @@
-import { App, BrowserWindow, BrowserWindowConstructorOptions } from "electron";
+import { BrowserWindow, BrowserWindowConstructorOptions } from "electron";
 import path from "path";
 
 const FILE_PATH = path.join(__dirname, "../frontend/index.html");
@@ -11,6 +11,7 @@ const WINDOW_SETTINGS: BrowserWindowConstructorOptions = {
     minWidth: 840,
     minHeight: 520,
     center: true,
+    show: false,
     resizable: true,
     icon: ICON_PATH,
     frame: false,
